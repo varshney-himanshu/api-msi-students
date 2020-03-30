@@ -1,30 +1,21 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const passport = require("passport");
-
+const Database = require("./Database");
 const app = (module.exports = express());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 //db connection
-const keys = require("./config/keys");
-mongoose.connect(
-  keys.mongoURI,
-  { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false },
-  err => {
-    if (err) {
-      console.log(err);
-    } else {
-      //   console.log("Database connected!");
-    }
-  }
-);
+const db = new Database();
+db.start();
 
 //routes config
 const userRoute = require("./routes/User");
+const noteRoute = require("./routes/Note");
 
 app.use("/user", userRoute);
+app.use("/note", noteRoute);
 
 //passport initialization
 app.use(passport.initialize());
