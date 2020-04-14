@@ -5,6 +5,8 @@ const Note = require("../models/Note");
 const passport = require("passport");
 const roles = require("../config/Roles");
 
+const replaceSpaces = require("../utils/ReplaceSpaces");
+
 //initializing s3 bucket
 const s3Bucket = require("../S3")();
 
@@ -44,7 +46,7 @@ router.post(
     let params = {
       Bucket: keys.awsBucketName,
       Body: file.buffer,
-      Key: "files/" + file.originalname,
+      Key: "files/" + replaceSpaces(file.originalname),
       ContentType: file.mimetype,
       ACL: "public-read",
     };
@@ -64,7 +66,7 @@ router.post(
           },
           file: {
             file_type: file.mimetype,
-            file_url: s3FileURL + file.originalname,
+            file_url: s3FileURL + params.Key,
             s3_key: params.Key,
           },
         });
