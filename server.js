@@ -13,9 +13,17 @@ db.start();
 //routes config
 const userRoute = require("./routes/User");
 const noteRoute = require("./routes/Note");
+const eventRoute = require("./routes/Event");
+const profileRoute = require("./routes/Profile");
+const imageRoute = require("./routes/Image");
+const noticeRoute = require("./routes/Notice");
 
 app.use("/user", userRoute);
 app.use("/note", noteRoute);
+app.use("/event", eventRoute);
+app.use("/profile", profileRoute);
+app.use("/image", imageRoute);
+app.use("/notice", noticeRoute);
 
 //passport initialization
 app.use(passport.initialize());

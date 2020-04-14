@@ -5,45 +5,56 @@ const noteSchema = new schema(
   {
     title: {
       type: String,
-      required: true
+      required: true,
     },
     user: {
       name: {
         type: String,
-        required: true
+        required: true,
       },
       id: {
         type: schema.Types.ObjectId,
-        required: true
-      }
+        required: true,
+        ref: "users",
+      },
     },
     subject: {
       type: String,
-      required: true
+      required: true,
     },
     description: {
       type: String,
-      required: true
+      required: true,
     },
     department: {
       type: String,
-      required: true
+      required: true,
     },
     file: {
       file_type: {
         type: String,
-        default: ""
+        default: "",
         //figure out  its requirement
       },
       file_url: {
         type: String,
-        required: true
+        required: true,
       },
       s3_key: {
         type: String,
-        required: true
-      }
-    }
+        required: true,
+      },
+    },
+    approved: {
+      isApproved: {
+        type: Boolean,
+        default: false,
+      },
+      approvedBy: {
+        name: { type: String },
+        id: { type: schema.Types.ObjectId },
+      },
+    },
   },
 
   { timestamps: true }

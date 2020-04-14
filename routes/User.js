@@ -2,6 +2,7 @@ const router = require("express").Router();
 const jwt = require("jsonwebtoken");
 const passport = require("passport");
 const bcrypt = require("bcryptjs");
+const roles = require("../config/Roles");
 
 //model
 const User = require("../models/User");
@@ -23,7 +24,7 @@ router.post("/register", (req, res) => {
     return res.status(400).json(errors);
   }
 
-  User.findOne({ email: req.body.email }).then(user => {
+  User.findOne({ email: req.body.email }).then((user) => {
     if (user) {
       errors.email = "Email already exists!";
       res.status(409).json(errors);
@@ -36,7 +37,7 @@ router.post("/register", (req, res) => {
         phone,
         role,
         password,
-        department
+        department,
       });
 
       bcrypt.genSalt(10, (err, salt) => {
@@ -44,10 +45,10 @@ router.post("/register", (req, res) => {
           newUser.password = hash;
           newUser
             .save()
-            .then(user => {
+            .then((user) => {
               res.status(200).json(user);
             })
-            .catch(err => {
+            .catch((err) => {
               res.json(err);
             });
         });
@@ -70,26 +71,26 @@ router.post("/login", (req, res) => {
   const password = req.body.password;
 
   User.findOne({ email })
-    .then(user => {
+    .then((user) => {
       if (!user) {
         errors.email = "User does not exist";
         res.status(404).json(errors);
       }
 
-      bcrypt.compare(password, user.password).then(isMatch => {
+      bcrypt.compare(password, user.password).then((isMatch) => {
         if (isMatch) {
           const payload = {
             id: user.id,
             email: user.email,
             name: user.name,
             role: user.role,
-            isProfileCreated: user.isProfileCreated
+            isProfileCreated: user.isProfileCreated,
           };
 
           jwt.sign(payload, secretOrKey, { expiresIn: 14400 }, (err, token) => {
             res.json({
               success: true,
-              token: "Bearer " + token
+              token: "Bearer " + token,
             });
 
             if (err) console.log(err);
@@ -100,7 +101,7 @@ router.post("/login", (req, res) => {
         }
       });
     })
-    .catch(err => console.log(err));
+    .catch((err) => console.log(err));
 });
 
 // @route   POST user/
@@ -113,12 +114,12 @@ router.get(
     const { _id } = req.user;
 
     User.findOne({ _id })
-      .then(user => {
+      .then((user) => {
         if (user) {
           res.status(200).json(user);
         }
       })
-      .catch(err => res.status(400).json(err));
+      .catch((err) => res.status(400).json(err));
   }
 );
 
@@ -129,7 +130,7 @@ router.get(
   "/all",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    if (req.user.role !== "SUPERADMIN") {
+    if (req.user.role !== roles.superadmin) {
       const errors = { auth: "not authorized!" };
       return res.status(403).json(errors);
     }
@@ -138,7 +139,7 @@ router.get(
       .collation({ locale: "en" })
       .sort({ name: 1 })
       .exec()
-      .then(users => {
+      .then((users) => {
         res.status(200).send(users);
       });
   }
@@ -153,12 +154,12 @@ router.delete(
   (req, res) => {
     const { id } = req.user;
     User.findOneAndDelete({ _id: id })
-      .then(user => {
+      .then((user) => {
         if (user) {
           res.status(200).json({ user, profile });
         }
       })
-      .catch(err => {
+      .catch((err) => {
         res.status(400).json(err);
       });
   }
@@ -171,19 +172,19 @@ router.put(
   "/:id/update-role",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    if (req.user.role !== "SUPERADMIN") {
+    if (req.user.role !== roles.superadmin) {
       const errors = { auth: false };
       return res.status(403).json(errors);
     }
     const { role } = req.body;
     const { id } = req.params;
     User.findOneAndUpdate({ _id: id }, { role }, { new: true })
-      .then(user => {
+      .then((user) => {
         if (user) {
           res.status(200).json(user);
         }
       })
-      .catch(err => {
+      .catch((err) => {
         res.status(400).json(err);
       });
   }
@@ -197,38 +198,38 @@ router.delete(
   "/:id",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    if (req.user.role !== "SUPERADMIN") {
+    if (req.user.role !== roles.superadmin) {
       const errors = { auth: false };
       return res.status(403).json(errors);
     }
 
     const { id } = req.params;
     User.findOneAndDelete({ _id: id })
-      .then(user => {
+      .then((user) => {
         res.status(200).json(user);
       })
-      .catch(err => {
+      .catch((err) => {
         res.status(400).json(err);
         console.log(err);
       });
   }
 );
 
-// @route   POST user/
-// @desc    get all user
+// @route   GET user/:id
+// @desc    get user by id
 // @access  private (ADMIN ONLY)
 router.get(
   "/:id",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    if (req.user.role !== "SUPERADMIN") {
+    if (req.user.role !== roles.superadmin) {
       const errors = { auth: false };
       return res.status(403).json(errors);
     }
 
     const { id } = req.params;
 
-    User.findOne({ _id: id }).then(user => {
+    User.findOne({ _id: id }).then((user) => {
       res.status(200).send(user);
     });
   }
@@ -244,10 +245,10 @@ router.post(
   (req, res) => {
     const { password } = req.body;
     const { email } = req.user;
-    User.findOne({ email }).then(user => {
+    User.findOne({ email }).then((user) => {
       bcrypt
         .compare(password, user.password)
-        .then(isMatch => res.status(200).send(isMatch));
+        .then((isMatch) => res.status(200).send(isMatch));
     });
   }
 );
