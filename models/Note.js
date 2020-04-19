@@ -7,29 +7,54 @@ const noteSchema = new schema(
       type: String,
       required: true,
     },
+
     user: {
-      name: {
+      user_name: {
         type: String,
         required: true,
       },
-      id: {
+      user_id: {
         type: schema.Types.ObjectId,
         required: true,
         ref: "users",
       },
     },
+
     subject: {
-      type: String,
-      required: true,
+      subject_id: {
+        type: schema.Types.ObjectId,
+        required: true,
+        ref: "subjects",
+      },
+      subject_name: {
+        type: String,
+        required: true,
+      },
     },
+
+    semester: {
+      semester_id: {
+        type: schema.Types.ObjectId,
+        required: true,
+        ref: "semesters",
+      },
+      semester_name: { type: String, required: true },
+    },
+
+    department: {
+      department_id: {
+        type: schema.Types.ObjectId,
+        required: true,
+        ref: "departments",
+      },
+      department_name: { type: String, required: true },
+    },
+
     description: {
       type: String,
       required: true,
     },
-    department: {
-      type: String,
-      required: true,
-    },
+
     file: {
       file_type: {
         type: String,
@@ -45,6 +70,7 @@ const noteSchema = new schema(
         required: true,
       },
     },
+
     approved: {
       isApproved: {
         type: Boolean,

@@ -9,25 +9,6 @@ const s3Bucket = require("../S3")();
 const roles = require("../config/Roles");
 const replaceSpaces = require("../utils/ReplaceSpaces");
 
-// const {
-//   cloud_api_key,
-//   cloud_name,
-//   cloud_api_secret,
-// } = require("../config/keys");
-// const cloudinary = require("cloudinary");
-// const cloudinaryStorage = require("multer-storage-cloudinary");
-
-// cloudinary.config({
-//   cloud_name: cloud_name,
-//   api_key: cloud_api_key,
-//   api_secret: cloud_api_secret,
-// });
-
-// const storage = cloudinaryStorage({
-//   cloudinary: cloudinary,
-//   folder: "msi-events/events",
-// });
-
 let storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
@@ -40,9 +21,9 @@ router.post(
   "/register",
   [passport.authenticate("jwt", { session: false }), upload.single("file")],
   (req, res) => {
-    if (req.user.role !== roles.admin && req.user.role !== roles.superadmin) {
-      return res.status(401).json({ msg: "unauthorized" });
-    }
+    // if (req.user.role !== roles.admin && req.user.role !== roles.superadmin) {
+    //   return res.status(401).json({ msg: "unauthorized" });
+    // }
 
     const { isValid, errors } = validateEventRegisterInput(req.body);
     if (!isValid) {
@@ -70,9 +51,6 @@ router.post(
       image_type: file.mimetype,
       s3_key: params.Key,
     };
-
-    // image.url = req.file.url;
-    // image.public_id = req.file.public_id;
 
     const {
       creator_name,
@@ -209,8 +187,6 @@ router.put(
         s3_key: params.keys,
       };
 
-      // image.url = req.file.url;
-      // image.public_id = req.file.public_id;
       updatedata.image = image;
       const prevImage = JSON.parse(image_prev);
 
@@ -222,7 +198,6 @@ router.put(
       s3Bucket.deleteObject(dParams, (err, data) => {
         if (err) console.log(err);
       });
-      // cloudinary.v2.uploader.destroy(prevImage.public_id);
     }
 
     const { id } = req.params;
@@ -241,6 +216,9 @@ router.put(
   }
 );
 
+// @route   POST /event/:id/register-user
+// @desc    register user in an event by event_id
+// @access  private
 router.post(
   "/:id/register-user",
   passport.authenticate("jwt", { session: false }),
@@ -261,6 +239,9 @@ router.post(
   }
 );
 
+// @route   PUT /event/:id
+// @desc    Update event by id
+// @access  private
 router.delete(
   "/:id",
   passport.authenticate("jwt", { session: false }),

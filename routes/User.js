@@ -29,12 +29,11 @@ router.post("/register", (req, res) => {
       errors.email = "Email already exists!";
       res.status(409).json(errors);
     } else {
-      const { name, email, phone, role, password, department } = req.body;
+      const { name, email, role, password, department } = req.body;
 
       const newUser = new User({
         name,
         email,
-        phone,
         role,
         password,
         department,

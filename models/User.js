@@ -5,25 +5,29 @@ const userSchema = new schema(
   {
     name: {
       type: String,
-      required: true
+      required: true,
     },
     email: {
       type: String,
       required: true,
-      lowercase: true
+      lowercase: true,
     },
     password: {
       type: String,
-      required: true
+      required: true,
     },
     role: {
       type: String,
-      required: true
+      required: true,
     },
     department: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
+    isProfileCreated: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

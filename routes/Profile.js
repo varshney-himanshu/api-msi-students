@@ -10,7 +10,6 @@ const validateProfileRegisterInput = require("../validation/profile-registration
 // @route   POST profile/register
 // @desc    register profile
 // @access  private
-
 router.post(
   "/register",
   passport.authenticate("jwt", { session: false }),
@@ -25,8 +24,10 @@ router.post(
       email,
       fullName,
       enrollment_id,
-      course,
-      semester,
+      department_id,
+      department_name,
+      semester_id,
+      semester_name,
       section,
       institute,
       phone,
@@ -41,8 +42,14 @@ router.post(
           email,
           fullName,
           enrollment_id,
-          course,
-          semester,
+          department: {
+            department_id,
+            department_name,
+          },
+          semester: {
+            semester_id,
+            semester_name,
+          },
           section,
           institute,
           phone,
@@ -66,7 +73,6 @@ router.post(
 // @route   POST profile/edit
 // @desc    Update profile
 // @access  private
-
 router.post(
   "/edit",
   passport.authenticate("jwt", { session: false }),
@@ -82,8 +88,8 @@ router.post(
       fullName,
       enrollment_id,
       phone,
-      course,
-      semester,
+      semester_id,
+      semester_name,
       section,
       institute,
     } = req.body;
@@ -96,8 +102,10 @@ router.post(
         fullName,
         enrollment_id,
         phone,
-        course,
-        semester,
+        semester: {
+          semester_id,
+          semester_name,
+        },
         section,
         institute,
       },
@@ -115,7 +123,6 @@ router.post(
 // @route   GET /profile/
 // @desc    get profile
 // @access  private
-
 router.get(
   "/",
   passport.authenticate("jwt", { session: false }),
@@ -130,6 +137,9 @@ router.get(
   }
 );
 
+// @route   GET /profile/
+// @desc    get profile by id
+// @access  private
 router.get(
   "/:id",
   passport.authenticate("jwt", { session: false }),
@@ -149,7 +159,6 @@ router.get(
 // @route   PUT /profile/add-phone
 // @desc    update phone in profile
 // @access  private
-
 router.put(
   "/add-phone",
   passport.authenticate("jwt", { session: false }),
@@ -169,9 +178,8 @@ router.put(
 );
 
 // @route   PUT /profile/add-registered-event
-// @desc    add events that user registers
+// @desc    add events to the profile that an user registers
 // @access  private
-
 router.put(
   "/add-registered-event/id",
   passport.authenticate("jwt", { session: false }),
@@ -194,6 +202,9 @@ router.put(
   }
 );
 
+// @route   PUT /profile/add-registered-event
+// @desc    add events to the profile that an user registers
+// @access  private
 router.put(
   "/add-registered-event/email",
   passport.authenticate("jwt", { session: false }),
@@ -261,7 +272,6 @@ router.get(
 // @route   POST /profile/ids
 // @desc    get all profile with array of ids
 // @access  private
-
 router.post(
   "/ids",
   passport.authenticate("jwt", { session: false }),
@@ -288,6 +298,9 @@ router.post(
   }
 );
 
+// @route   POST /profile/ids/download
+// @desc    download all profile with array of ids
+// @access  private
 router.post(
   "/ids/download",
   passport.authenticate("jwt", { session: false }),
@@ -296,7 +309,6 @@ router.post(
     const ObjectId = mongoose.Types.ObjectId;
     const objIds = registered.map((id) => (id = new ObjectId(id)));
 
-    //   console.log(objIds);
     Profile.find({
       user: {
         $in: objIds,
@@ -345,7 +357,6 @@ router.post(
 // @route   DELETE /profile
 // @desc    delete user profile
 // @access  private
-
 router.delete(
   "/",
   passport.authenticate("jwt", { session: false }),
@@ -365,7 +376,6 @@ router.delete(
 // @route   POST profile/emails
 // @desc    get all users with array of emails
 // @access  private
-
 router.post(
   "/emails",
   passport.authenticate("jwt", { session: false }),

@@ -17,6 +17,8 @@ const eventRoute = require("./routes/Event");
 const profileRoute = require("./routes/Profile");
 const imageRoute = require("./routes/Image");
 const noticeRoute = require("./routes/Notice");
+const semesterRoute = require("./routes/Semester");
+const departmentRoute = require("./routes/Department");
 
 app.use("/user", userRoute);
 app.use("/note", noteRoute);
@@ -24,6 +26,8 @@ app.use("/event", eventRoute);
 app.use("/profile", profileRoute);
 app.use("/image", imageRoute);
 app.use("/notice", noticeRoute);
+app.use("/semester", semesterRoute);
+app.use("/department", departmentRoute);
 
 //passport initialization
 app.use(passport.initialize());

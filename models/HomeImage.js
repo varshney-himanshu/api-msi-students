@@ -4,13 +4,15 @@ const schema = mongoose.Schema;
 const HomeImageSchema = new schema(
   {
     event: {
-      id: { type: String },
-      msg: { type: String }
+      event_id: { type: schema.Types.ObjectId },
+      event_msg: { type: String },
     },
-    data: {
-      url: { type: String, require: true },
-      id: { type: String, require: true }
-    }
+
+    image: {
+      image_url: { type: String, required: true },
+      image_type: { type: String, required: true },
+      s3_key: { type: String, required: true },
+    },
   },
   { timestamps: true }
 );

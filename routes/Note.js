@@ -1,15 +1,20 @@
 const router = require("express").Router();
 const multer = require("multer");
 const keys = require("../config/keys");
-const Note = require("../models/Note");
 const passport = require("passport");
 const roles = require("../config/Roles");
 
+//utils
 const replaceSpaces = require("../utils/ReplaceSpaces");
+
+//models
+const Note = require("../models/Note");
+const Subject = require("../models/Subject");
 
 //initializing s3 bucket
 const s3Bucket = require("../S3")();
 
+//multer config
 let storage = multer.memoryStorage();
 let upload = multer({ storage: storage });
 
@@ -37,10 +42,14 @@ router.post(
     const {
       user_name,
       user_id,
-      department,
-      subject,
+      department_id,
+      department_name,
+      subject_id,
+      subject_name,
       description,
       title,
+      semester_id,
+      semester_name,
     } = req.body;
 
     let params = {
@@ -58,8 +67,12 @@ router.post(
         let newNote = new Note({
           title,
           description,
-          department,
-          subject,
+          department: {
+            department_id,
+            department_name,
+          },
+          subject: { subject_id, subject_name },
+          semester: { semester_id, semester_name },
           user: {
             name: user_name,
             id: user_id,
@@ -75,6 +88,16 @@ router.post(
           if (err) {
             console.log(err);
           } else {
+            //updating subject's notes count
+            Subject.findOne({ subject: { subject_id } }).then((subject) => {
+              const unapprovedCount = subject.notesCount.unapproved;
+              Subject.findOneAndUpdate(
+                { subject: { subject_id } },
+                { notesCount: { unapproved: unapprovedCount + 1 } },
+                { new: true }
+              ).catch((err) => console.log(err));
+            });
+            //response if success
             res.status(200).json({ success: true, data: note });
           }
         });
@@ -82,19 +105,6 @@ router.post(
     });
   }
 );
-
-// // @route   DELETE user/
-// // @desc    Delete user profile
-// // @access  public
-// router.get("/approved/:department/:subject", (req, res) => {
-//   const { department, subject } = req.params;
-
-//   Note.find({ department, subject, approved: { isApproved: false } }).then(
-//     (notes) => {
-//       console.log(notes);
-//     }
-//   );
-// });
 
 // @route   GET note/all
 // @desc    get all notes, approved or unapproved
@@ -179,5 +189,61 @@ router.delete(
       .catch((err) => console.log(err));
   }
 );
+
+/* #subject routes */
+
+// @route   GET note/subject/:id
+// @desc    get all approved notes with subject id
+// @access  public
+router.get("/subject/:id/approved", (req, res) => {
+  const id = req.params;
+  Note.find({
+    subject: { subject_id: id },
+    approved: { isApproved: true },
+  })
+    .then((notes) => {
+      if (notes) {
+        res.status(200).json(notes);
+      } else {
+        res.status(404).json({ error: "no notes found" });
+      }
+    })
+    .catch((err) => console.log(err));
+});
+
+// @route   GET note/subject/:id/unapproved
+// @desc    get all unapproved notes with subject id
+// @access  public
+router.get("/subject/:id/unapproved", (req, res) => {
+  const id = req.params;
+  Note.find({
+    subject: { subject_id: id },
+    approved: { isApproved: false },
+  })
+    .then((notes) => {
+      if (notes) {
+        res.status(200).json(notes);
+      } else {
+        res.status(404).json({ error: "no notes found" });
+      }
+    })
+    .catch((err) => console.log(err));
+});
+
+// @route   GET note/subject/:id/all
+// @desc    get all notes with subject id
+// @access  public
+router.get("/subject/:id/all", (req, res) => {
+  const id = req.params;
+  Note.find({ subject: { subject_id: id } })
+    .then((notes) => {
+      if (notes) {
+        res.status(200).json(notes);
+      } else {
+        res.status(404).json({ error: "no notes found" });
+      }
+    })
+    .catch((err) => console.log(err));
+});
 
 module.exports = router;
