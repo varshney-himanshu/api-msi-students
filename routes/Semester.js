@@ -1,6 +1,11 @@
 const router = require("express").Router();
 const passport = require("passport");
 
+//helpers
+const {
+  IncreaseSemesterCount,
+  DecreaseSemesterCount,
+} = require("./Helpers/Department");
 //models
 const Subject = require("../models/Subject");
 const Semester = require("../models/Semester");
@@ -34,6 +39,7 @@ router.post(
       .save()
       .then((semester) => {
         if (semester) {
+          IncreaseSemesterCount(department_id);
           res.status(200).json({ semester });
         }
       })
@@ -48,15 +54,16 @@ router.delete(
   "/:id",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    const id = req.params;
+    const { id } = req.params;
 
     if (req.user.role !== roles.superadmin) {
       return res.status(403).json({ error: "access denied" });
     }
 
-    Semester.findByIdAndDelete({ _id: id })
+    Semester.findOneAndDelete({ _id: id })
       .then((sem) => {
         if (sem) {
+          DecreaseSemesterCount(sem.department.department_id);
           res.status(200).json(sem);
         }
       })
@@ -68,8 +75,9 @@ router.delete(
 // @desc    get all the subjects of a semester id
 // @access  public
 router.get("/:id/subjects", (req, res) => {
-  const id = req.params;
-  Subject.find({ semester: { semester_id: id } })
+  const { id } = req.params;
+
+  Subject.find({ "semester.semester_id": id })
     .then((subjects) => {
       if (subjects) {
         res.status(200).json(subjects);
@@ -79,5 +87,22 @@ router.get("/:id/subjects", (req, res) => {
     })
     .catch((err) => console.log(err));
 });
+
+// @route   GET semester/all
+// @desc    get all semesters in the database
+// @access  public
+router.get(
+  "/all",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Semester.find()
+      .then((semesters) => {
+        if (semesters) {
+          res.status(200).json(semesters);
+        }
+      })
+      .catch((err) => console.log(err));
+  }
+);
 
 module.exports = router;

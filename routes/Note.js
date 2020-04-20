@@ -6,7 +6,7 @@ const roles = require("../config/Roles");
 
 //utils
 const replaceSpaces = require("../utils/ReplaceSpaces");
-
+const { IncreaseNoteCount, DecreaseNoteCount } = require("./Helpers/Subject");
 //models
 const Note = require("../models/Note");
 const Subject = require("../models/Subject");
@@ -74,8 +74,8 @@ router.post(
           subject: { subject_id, subject_name },
           semester: { semester_id, semester_name },
           user: {
-            name: user_name,
-            id: user_id,
+            user_name,
+            user_id,
           },
           file: {
             file_type: file.mimetype,
@@ -88,15 +88,6 @@ router.post(
           if (err) {
             console.log(err);
           } else {
-            //updating subject's notes count
-            Subject.findOne({ subject: { subject_id } }).then((subject) => {
-              const unapprovedCount = subject.notesCount.unapproved;
-              Subject.findOneAndUpdate(
-                { subject: { subject_id } },
-                { notesCount: { unapproved: unapprovedCount + 1 } },
-                { new: true }
-              ).catch((err) => console.log(err));
-            });
             //response if success
             res.status(200).json({ success: true, data: note });
           }
@@ -147,11 +138,16 @@ router.put(
         approvedBy: { name: user_name, id: user_id },
       },
     };
-    Note.findOneAndUpdate({ _id: id }, data, { new: true }).then((note) => {
-      if (note) {
-        res.status(200).json(note);
-      }
-    });
+    Note.findOneAndUpdate({ _id: id }, data, { new: true })
+      .then((note) => {
+        if (note) {
+          IncreaseNoteCount(note.subject.subject_id);
+          res.status(200).json(note);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 );
 
@@ -168,7 +164,7 @@ router.delete(
     }
 
     const id = req.params.id;
-    console.log(id);
+    // console.log(id);
 
     Note.findOneAndDelete({ _id: id })
       .then((note) => {
@@ -181,6 +177,9 @@ router.delete(
             if (err) {
               console.log(err);
             } else {
+              if (note.approved.isApproved) {
+                DecreaseNoteCount(note.subject.subject_id);
+              }
               res.status(200).json(note);
             }
           });
@@ -196,10 +195,10 @@ router.delete(
 // @desc    get all approved notes with subject id
 // @access  public
 router.get("/subject/:id/approved", (req, res) => {
-  const id = req.params;
+  const { id } = req.params;
   Note.find({
-    subject: { subject_id: id },
-    approved: { isApproved: true },
+    "subject.subject_id": id,
+    "approved.isApproved": true,
   })
     .then((notes) => {
       if (notes) {
@@ -215,10 +214,10 @@ router.get("/subject/:id/approved", (req, res) => {
 // @desc    get all unapproved notes with subject id
 // @access  public
 router.get("/subject/:id/unapproved", (req, res) => {
-  const id = req.params;
+  const { id } = req.params;
   Note.find({
-    subject: { subject_id: id },
-    approved: { isApproved: false },
+    "subject.subject_id": id,
+    "approved.isApproved": false,
   })
     .then((notes) => {
       if (notes) {
@@ -234,8 +233,8 @@ router.get("/subject/:id/unapproved", (req, res) => {
 // @desc    get all notes with subject id
 // @access  public
 router.get("/subject/:id/all", (req, res) => {
-  const id = req.params;
-  Note.find({ subject: { subject_id: id } })
+  const { id } = req.params;
+  Note.find({ "subject.subject_id": id })
     .then((notes) => {
       if (notes) {
         res.status(200).json(notes);

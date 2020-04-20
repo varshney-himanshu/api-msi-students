@@ -2,11 +2,16 @@ const router = require("express").Router();
 const passport = require("passport");
 const Notice = require("../models/Notice");
 
+const roles = require("../config/Roles");
+
+// @route   POST notice/add
+// @desc    add notice
+// @access  private [ADMIN]
 router.post(
   "/add",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    if (req.user.role !== "SUPER_ADMIN") {
+    if (req.user.role !== roles.superadmin) {
       return res.status(401).json({ msg: "unauthorized" });
     }
     const { text } = req.body;
@@ -23,11 +28,14 @@ router.post(
   }
 );
 
-router.post(
-  "/update/:id",
+// @route   PUT notice/:id
+// @desc    update notice
+// @access  private [ADMIN]
+router.put(
+  "/:id",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    if (req.user.role !== "SUPER_ADMIN") {
+    if (req.user.role !== roles.superadmin) {
       return res.status(401).json({ msg: "unauthorized" });
     }
     const { text } = req.body;
@@ -43,6 +51,9 @@ router.post(
   }
 );
 
+// @route   PUT notice/latest
+// @desc    approve event
+// @access  public
 router.get("/latest", (req, res) => {
   Notice.find()
     .limit(1)
@@ -55,11 +66,14 @@ router.get("/latest", (req, res) => {
     .catch((err) => res.status(400).json(err));
 });
 
+// @route   GET /notice/all
+// @desc    get all notice
+// @access  private [SUPERADMIN]
 router.get(
   "/all",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    if (req.user.role !== "SUPER_ADMIN") {
+    if (req.user.role !== roles.superadmin) {
       return res.status(401).json({ msg: "unauthorized" });
     }
     Notice.find()
@@ -73,11 +87,14 @@ router.get(
   }
 );
 
+// @route   DELETE /notice/:id
+// @desc    delete notice
+// @access  private [SUPERADMIN]
 router.delete(
   "/:id",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    if (req.user.role !== "SUPER_ADMIN") {
+    if (req.user.role !== roles.superadmin) {
       return res.status(401).json({ msg: "unauthorized" });
     }
     const id = req.params.id;

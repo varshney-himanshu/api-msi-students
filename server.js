@@ -19,6 +19,7 @@ const imageRoute = require("./routes/Image");
 const noticeRoute = require("./routes/Notice");
 const semesterRoute = require("./routes/Semester");
 const departmentRoute = require("./routes/Department");
+const subjectRoute = require("./routes/Subject");
 
 app.use("/user", userRoute);
 app.use("/note", noteRoute);
@@ -28,6 +29,7 @@ app.use("/image", imageRoute);
 app.use("/notice", noticeRoute);
 app.use("/semester", semesterRoute);
 app.use("/department", departmentRoute);
+app.use("/subject", subjectRoute);
 
 //passport initialization
 app.use(passport.initialize());

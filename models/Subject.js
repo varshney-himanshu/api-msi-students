@@ -33,19 +33,13 @@ const subjectSchema = new schema(
       },
     },
 
-    //number of approved and unapproved notes
+    //number of approved notes
     notesCount: {
-      approved: {
-        type: Number,
-        default: 0,
-      },
-      unapproved: {
-        type: Number,
-        default: 0,
-      },
+      type: Number,
+      default: 0,
     },
   },
   { timestamps: true }
 );
 
-module.exports = Notice = mongoose.model("subjects", subjectSchema);
+module.exports = Subject = mongoose.model("subjects", subjectSchema);

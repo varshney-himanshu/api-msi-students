@@ -13,6 +13,7 @@ let storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 const validateEventRegisterInput = require("../validation/event-registration");
+const validateEventUpdateInput = require("../validation/event-updation");
 
 // @route   POST /event/register
 // @desc    add new event
@@ -118,7 +119,7 @@ router.get(
   (req, res) => {
     const { id } = req.user;
 
-    Event.find({ creator: id })
+    Event.find({ "creator.creator_id": id })
       .sort({ createdAt: -1 })
       .then((events) => {
         if (events) {
@@ -153,7 +154,7 @@ router.put(
   "/:id",
   [passport.authenticate("jwt", { session: false }), upload.single("file")],
   (req, res) => {
-    const { isValid, errors } = validateEventRegisterInput(req.body);
+    const { isValid, errors } = validateEventUpdateInput(req.body);
 
     if (!isValid) {
       return res.status(400).json(errors);
@@ -169,6 +170,7 @@ router.put(
     updatedata.date = date;
 
     if (req.file) {
+      // console.log("here");
       const file = req.file;
       const s3FileURL = keys.awsUploadedFileUrl;
 
@@ -182,14 +184,17 @@ router.put(
       };
 
       const image = {
-        image_url: s3FileURL + params.keys,
+        image_url: s3FileURL + params.Key,
         image_type: file.mimetype,
-        s3_key: params.keys,
+        s3_key: params.Key,
       };
+
+      // console.log(image);
 
       updatedata.image = image;
       const prevImage = JSON.parse(image_prev);
 
+      // console.log(prevImage);
       //delete parameters
       const dParams = {
         Bucket: keys.awsBucketName,
@@ -247,7 +252,6 @@ router.delete(
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const { id } = req.params;
-    const user = req.user.id;
     Event.findOneAndDelete({ _id: id })
       .then((event) => {
         if (event) {
@@ -337,6 +341,41 @@ router.post(
     res.attachment("registered.csv");
 
     res.status(200).send(csv);
+  }
+);
+
+//approve event
+// @route   PUT event/:id/approve
+// @desc    approve event
+// @access  private [ADMIN]
+router.put(
+  "/:id/approve",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    if (req.user.role !== roles.superadmin && req.user.role !== roles.admin) {
+      const errors = { auth: "not authorized!" };
+      return res.status(403).json(errors);
+    }
+    const { user_id, user_name } = req.body;
+
+    if (user_id === undefined || user_name === undefined) {
+      return res.status(400).json({ err: "userid or username missing!" });
+    }
+
+    const id = req.params.id;
+    const data = {
+      approved: {
+        isApproved: true,
+        approvedBy: { name: user_name, id: user_id },
+      },
+    };
+    Event.findOneAndUpdate({ _id: id }, data, { new: true })
+      .then((event) => {
+        if (event) {
+          res.status(200).json(event);
+        }
+      })
+      .catch((err) => console.log(err));
   }
 );
 

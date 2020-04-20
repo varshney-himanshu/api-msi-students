@@ -14,7 +14,7 @@ const ProfileSchema = new schema(
     },
     email: {
       type: String,
-      require: true,
+      required: true,
       lowercase: true,
     },
     enrollment_id: {

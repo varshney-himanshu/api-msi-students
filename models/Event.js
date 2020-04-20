@@ -49,6 +49,16 @@ const eventSchema = new schema(
     members: {
       type: Number,
     },
+    approved: {
+      isApproved: {
+        type: Boolean,
+        default: false,
+      },
+      approvedBy: {
+        id: { type: schema.Types.ObjectId, default: null },
+        name: { type: String, default: "" },
+      },
+    },
   },
   { timestamps: true }
 );

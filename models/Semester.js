@@ -9,8 +9,8 @@ const semesterSchema = new schema(
       required: true,
     },
 
-    deparment: {
-      deparment_id: {
+    department: {
+      department_id: {
         type: schema.Types.ObjectId,
         required: true,
         ref: "departments",
@@ -29,4 +29,4 @@ const semesterSchema = new schema(
   { timestamps: true }
 );
 
-module.exports = Notice = mongoose.model("semesters", semesterSchema);
+module.exports = Semester = mongoose.model("semesters", semesterSchema);

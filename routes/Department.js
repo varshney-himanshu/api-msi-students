@@ -20,6 +20,9 @@ router.post(
     }
 
     const { title } = req.body;
+    if (title === undefined) {
+      return res.status(400).json({ title: "title required" });
+    }
     const data = {
       title,
     };
@@ -43,7 +46,7 @@ router.delete(
   "/:id",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    const id = req.params;
+    const { id } = req.params;
 
     if (req.user.role !== roles.superadmin) {
       return res.status(403).json({ error: "access denied" });
@@ -72,13 +75,13 @@ router.get("/all", (req, res) => {
 // @desc    get all the semester of a department by id
 // @access  public
 router.get("/:id/semesters", (req, res) => {
-  const id = req.params;
-  Semesters.find({ department: { department_id: id } })
-    .then((semesters) => {
-      if (semesters) {
-        res.status(200).json(semesters);
-      } else {
-        res.status(404).json({ error: "no semesters found" });
+  const { id } = req.params;
+  // console.log(id);
+
+  Semester.find({ "department.department_id": id })
+    .then((sems) => {
+      if (sems) {
+        res.status(200).json(sems);
       }
     })
     .catch((err) => console.log(err));

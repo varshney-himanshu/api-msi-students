@@ -5,6 +5,7 @@ const passport = require("passport");
 const User = require("../models/User");
 const { Parser } = require("json2csv");
 
+const roles = require("../config/Roles");
 const validateProfileRegisterInput = require("../validation/profile-registration");
 
 // @route   POST profile/register
@@ -59,7 +60,7 @@ router.post(
           const updata = {
             isProfileCreated: true,
           };
-          User.findOneAndUpdate({ _id: req.user.id }, updata, {
+          User.findOneAndUpdate({ _id: user }, updata, {
             new: true,
           }).then((user) => {
             res.status(200).json({ profile, user });
@@ -137,6 +138,27 @@ router.get(
   }
 );
 
+// @route   GET /profile/all
+// @desc    get all profiles
+// @access  private (ADMIN only)
+router.get(
+  "/all",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    if (req.user.role !== roles.superadmin) {
+      return res.status(401).json({ msg: "unauthorized!" });
+    }
+
+    Profile.find()
+      .then((profiles) => {
+        res.status(200).json(profiles);
+      })
+      .catch((err) => {
+        res.status(400).json(err);
+      });
+  }
+);
+
 // @route   GET /profile/
 // @desc    get profile by id
 // @access  private
@@ -145,11 +167,13 @@ router.get(
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const { id } = req.params;
-
-    Profile.findOne({ user: id })
+    // console.log(id);
+    Profile.findOne({ _id: id })
       .then((profile) => {
         if (profile) {
           res.status(200).json(profile);
+        } else {
+          res.status(400).json({ profile: "no profile exist" });
         }
       })
       .catch((err) => res.status(400).json(err));
@@ -227,47 +251,24 @@ router.put(
   }
 );
 
-// @route   PUT /profile/social
-// @desc    update social media links in profile
-// @access  private
-
-router.put(
-  "/social",
-  passport.authenticate("jwt", { session: false }),
-  (req, res) => {
-    const { id } = req.user;
-    const { social } = req.body;
-    Profile.findOneAndUpdate({ user: id }, { social }, { new: true })
-      .then((profile) => {
-        if (profile) {
-          res.status(200).json(profile);
-        }
-      })
-      .catch((err) => res.status(400).json(err));
-  }
-);
-
-// @route   GET /profile/all
-// @desc    get all profiles
-// @access  private (ADMIN only)
-
-router.get(
-  "/all",
-  passport.authenticate("jwt", { session: false }),
-  (req, res) => {
-    if (req.user.role !== "SUPER_ADMIN") {
-      return res.status(401).json({ msg: "unauthorized!" });
-    }
-
-    Profile.find()
-      .then((profiles) => {
-        res.status(200).json(profiles);
-      })
-      .catch((err) => {
-        res.status(400).json(err);
-      });
-  }
-);
+// // @route   PUT /profile/social
+// // @desc    update social media links in profile
+// // @access  private
+// router.put(
+//   "/social",
+//   passport.authenticate("jwt", { session: false }),
+//   (req, res) => {
+//     const { id } = req.user;
+//     const { social } = req.body;
+//     Profile.findOneAndUpdate({ user: id }, { social }, { new: true })
+//       .then((profile) => {
+//         if (profile) {
+//           res.status(200).json(profile);
+//         }
+//       })
+//       .catch((err) => res.status(400).json(err));
+//   }
+// );
 
 // @route   POST /profile/ids
 // @desc    get all profile with array of ids
