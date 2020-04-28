@@ -29,4 +29,4 @@ const semesterSchema = new schema(
   { timestamps: true }
 );
 
-module.exports = Semester = mongoose.model("semesters", semesterSchema);
+module.exports = Semester = mongoose.model("Semester", semesterSchema);

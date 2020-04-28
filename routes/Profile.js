@@ -145,7 +145,7 @@ router.get(
   "/all",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    if (req.user.role !== roles.superadmin) {
+    if (req.user.role !== roles.admin) {
       return res.status(401).json({ msg: "unauthorized!" });
     }
 

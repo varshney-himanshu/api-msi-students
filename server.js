@@ -2,10 +2,11 @@ const express = require("express");
 const passport = require("passport");
 const Database = require("./Database");
 const app = (module.exports = express());
+const cors = require("cors");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
+app.use(cors());
 //db connection
 const db = new Database();
 db.start();

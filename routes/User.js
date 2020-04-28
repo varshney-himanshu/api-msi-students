@@ -124,12 +124,12 @@ router.get(
 
 // @route   GET user/all
 // @desc    get all user
-// @access  private (SUPER ADMIN ONLY)
+// @access  private (ADMIN ONLY)
 router.get(
   "/all",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    if (req.user.role !== roles.superadmin) {
+    if (req.user.role !== roles.admin) {
       const errors = { auth: "not authorized!" };
       return res.status(403).json(errors);
     }
@@ -166,12 +166,12 @@ router.delete(
 
 // @route   PUT user/:id/update-role
 // @desc    update role of a user by id
-// @access  private (SUPER ADMIN ONLY)
+// @access  private (ADMIN ONLY)
 router.put(
   "/:id/update-role",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    if (req.user.role !== roles.superadmin) {
+    if (req.user.role !== roles.admin) {
       const errors = { auth: false };
       return res.status(403).json(errors);
     }
@@ -191,13 +191,13 @@ router.put(
 
 // @route   DELETE user/:id
 // @desc    Delete user by id
-// @access  private (SUPER ADMIN ONLY)
+// @access  private (ADMIN ONLY)
 
 router.delete(
   "/:id",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    if (req.user.role !== roles.superadmin) {
+    if (req.user.role !== roles.admin) {
       const errors = { auth: false };
       return res.status(403).json(errors);
     }
@@ -221,7 +221,7 @@ router.get(
   "/:id",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    if (req.user.role !== roles.superadmin) {
+    if (req.user.role !== roles.admin) {
       const errors = { auth: false };
       return res.status(403).json(errors);
     }

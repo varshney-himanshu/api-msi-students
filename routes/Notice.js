@@ -11,7 +11,7 @@ router.post(
   "/add",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    if (req.user.role !== roles.superadmin) {
+    if (req.user.role !== roles.admin) {
       return res.status(401).json({ msg: "unauthorized" });
     }
     const { text } = req.body;
@@ -35,7 +35,7 @@ router.put(
   "/:id",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    if (req.user.role !== roles.superadmin) {
+    if (req.user.role !== roles.admin) {
       return res.status(401).json({ msg: "unauthorized" });
     }
     const { text } = req.body;
@@ -68,12 +68,12 @@ router.get("/latest", (req, res) => {
 
 // @route   GET /notice/all
 // @desc    get all notice
-// @access  private [SUPERADMIN]
+// @access  private [ADMIN]
 router.get(
   "/all",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    if (req.user.role !== roles.superadmin) {
+    if (req.user.role !== roles.admin) {
       return res.status(401).json({ msg: "unauthorized" });
     }
     Notice.find()
@@ -89,12 +89,12 @@ router.get(
 
 // @route   DELETE /notice/:id
 // @desc    delete notice
-// @access  private [SUPERADMIN]
+// @access  private [ADMIN]
 router.delete(
   "/:id",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    if (req.user.role !== roles.superadmin) {
+    if (req.user.role !== roles.admin) {
       return res.status(401).json({ msg: "unauthorized" });
     }
     const id = req.params.id;

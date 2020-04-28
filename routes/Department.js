@@ -10,12 +10,12 @@ const roles = require("../config/Roles");
 
 // @route   POST department/add
 // @desc    add new department
-// @access  private (SUPERADMIN access only)
+// @access  private (ADMIN access only)
 router.post(
   "/add",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    if (req.user.role !== roles.superadmin) {
+    if (req.user.role !== roles.admin) {
       return res.status(403).json({ error: "access denied" });
     }
 
@@ -41,14 +41,14 @@ router.post(
 
 // @route   DELETE department/:id
 // @desc    delete a department
-// @access  private (SUPERADMIN access only)
+// @access  private (ADMIN access only)
 router.delete(
   "/:id",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const { id } = req.params;
 
-    if (req.user.role !== roles.superadmin) {
+    if (req.user.role !== roles.admin) {
       return res.status(403).json({ error: "access denied" });
     }
 

@@ -99,12 +99,12 @@ router.post(
 
 // @route   GET note/all
 // @desc    get all notes, approved or unapproved
-// @access  private [SUPER ADMIN]
+// @access  private [ADMIN]
 router.get(
   "/all",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    if (req.user.role !== roles.superadmin) {
+    if (req.user.role !== roles.admin) {
       const errors = { auth: "not authorized!" };
       return res.status(403).json(errors);
     }
@@ -116,12 +116,12 @@ router.get(
 
 // @route   PUT note/:id/approve
 // @desc    approve note
-// @access  private [SUPER ADMIN]
+// @access  private [Moderator]
 router.put(
   "/:id/approve",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    if (req.user.role !== roles.superadmin) {
+    if (req.user.role !== roles.admin && req.user.role !== roles.mod) {
       const errors = { auth: "not authorized!" };
       return res.status(403).json(errors);
     }
@@ -153,12 +153,12 @@ router.put(
 
 // @route   DELETE note/:id
 // @desc    Delete note
-// @access  private [SUPER ADMIN]
+// @access  private [ADMIN]
 router.delete(
   "/:id",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    if (req.user.role !== roles.superadmin) {
+    if (req.user.role !== roles.admin) {
       const errors = { auth: "not authorized!" };
       return res.status(403).json(errors);
     }

@@ -5,10 +5,10 @@ const noticeSchema = new schema(
   {
     text: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   { timestamps: true }
 );
 
-module.exports = Notice = mongoose.model("notices", noticeSchema);
+module.exports = Notice = mongoose.model("Notice", noticeSchema);

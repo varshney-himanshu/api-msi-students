@@ -17,4 +17,4 @@ const HomeImageSchema = new schema(
   { timestamps: true }
 );
 
-module.exports = HomeImage = mongoose.model("homeimages", HomeImageSchema);
+module.exports = HomeImage = mongoose.model("HomeImage", HomeImageSchema);
