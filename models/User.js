@@ -22,8 +22,12 @@ const userSchema = new schema(
       enum: [roles.admin, roles.mod, roles.student],
     },
     department: {
-      type: String,
-      required: true,
+      department_name: { type: String, required: true },
+      department_id: {
+        type: schema.Types.ObjectId,
+        required: true,
+        ref: "Department",
+      },
     },
     isProfileCreated: {
       type: Boolean,

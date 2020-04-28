@@ -5,7 +5,7 @@ const ProfileSchema = new schema(
   {
     user: {
       type: schema.Types.ObjectId,
-      ref: "users",
+      ref: "User",
       required: true,
     },
     fullName: {
@@ -33,7 +33,7 @@ const ProfileSchema = new schema(
       department_id: {
         type: schema.Types.ObjectId,
         required: true,
-        ref: "departments",
+        ref: "Department",
       },
     },
     semester: {
@@ -44,7 +44,7 @@ const ProfileSchema = new schema(
       semester_id: {
         type: schema.Types.ObjectId,
         required: true,
-        ref: "semesters",
+        ref: "Semester",
       },
     },
     section: {

@@ -29,14 +29,21 @@ router.post("/register", (req, res) => {
       errors.email = "Email already exists!";
       res.status(409).json(errors);
     } else {
-      const { name, email, role, password, department } = req.body;
+      const {
+        name,
+        email,
+        role,
+        password,
+        department_id,
+        department_name,
+      } = req.body;
 
       const newUser = new User({
         name,
         email,
         role,
         password,
-        department,
+        department: { department_id, department_name },
       });
 
       bcrypt.genSalt(10, (err, salt) => {
@@ -83,6 +90,7 @@ router.post("/login", (req, res) => {
             email: user.email,
             name: user.name,
             role: user.role,
+            department: user.department,
             isProfileCreated: user.isProfileCreated,
           };
 

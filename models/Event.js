@@ -10,7 +10,7 @@ const eventSchema = new schema(
       },
       creator_id: {
         type: schema.Types.ObjectId,
-        ref: "users",
+        ref: "User",
         required: true,
       },
     },
@@ -22,6 +22,7 @@ const eventSchema = new schema(
     type: {
       type: String,
       required: true,
+      enum: ["MULTIPLE", "SINGLE"],
     },
     title: {
       type: String,

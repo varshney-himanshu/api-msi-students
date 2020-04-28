@@ -16,7 +16,7 @@ const noteSchema = new schema(
       user_id: {
         type: schema.Types.ObjectId,
         required: true,
-        ref: "users",
+        ref: "User",
       },
     },
 
@@ -24,7 +24,7 @@ const noteSchema = new schema(
       subject_id: {
         type: schema.Types.ObjectId,
         required: true,
-        ref: "subjects",
+        ref: "Subject",
       },
       subject_name: {
         type: String,
@@ -36,7 +36,7 @@ const noteSchema = new schema(
       semester_id: {
         type: schema.Types.ObjectId,
         required: true,
-        ref: "semesters",
+        ref: "Semester",
       },
       semester_name: { type: String, required: true },
     },
@@ -45,7 +45,7 @@ const noteSchema = new schema(
       department_id: {
         type: schema.Types.ObjectId,
         required: true,
-        ref: "departments",
+        ref: "Department",
       },
       department_name: { type: String, required: true },
     },

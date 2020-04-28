@@ -13,7 +13,7 @@ const semesterSchema = new schema(
       department_id: {
         type: schema.Types.ObjectId,
         required: true,
-        ref: "departments",
+        ref: "Department",
       },
       department_name: {
         type: String,

@@ -9,7 +9,10 @@ module.exports = function validateRegisterInput(data) {
   data.role = !isEmpty(data.role) ? data.role : "";
   data.password = !isEmpty(data.password) ? data.password : "";
   data.password2 = !isEmpty(data.password2) ? data.password2 : "";
-  data.department = !isEmpty(data.department) ? data.department : "";
+  data.department_id = !isEmpty(data.department_id) ? data.department_id : "";
+  data.department_name = !isEmpty(data.department_name)
+    ? data.department_name
+    : "";
 
   if (!Validator.isLength(data.name, { min: 2, max: 30 })) {
     errors.name = "Name must be between 2 and 30 characters";
@@ -47,12 +50,16 @@ module.exports = function validateRegisterInput(data) {
     errors.role = "Role is required";
   }
 
-  if (Validator.isEmpty(data.department)) {
-    errors.department = "Department is required";
+  if (Validator.isEmpty(data.department_id)) {
+    errors.department_id = "Department id is required";
+  }
+
+  if (Validator.isEmpty(data.department_name)) {
+    errors.department_name = "Department name is required";
   }
 
   return {
     errors,
-    isValid: isEmpty(errors)
+    isValid: isEmpty(errors),
   };
 };

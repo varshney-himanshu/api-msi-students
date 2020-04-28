@@ -168,7 +168,7 @@ router.get(
   (req, res) => {
     const { id } = req.params;
     // console.log(id);
-    Profile.findOne({ _id: id })
+    Profile.findOne({ user: id })
       .then((profile) => {
         if (profile) {
           res.status(200).json(profile);
