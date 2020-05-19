@@ -1,5 +1,5 @@
 {
-  "name": "api-msi-notes",
+  "name": "api-msi-student",
   "version": "1.0.0",
   "description": "backend db api for msi notes",
   "main": "server.js",

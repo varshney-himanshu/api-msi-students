@@ -8,6 +8,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 //db connection
+
+app.get("/", (req, res) => {
+  res.send("api msi students");
+});
 const db = new Database();
 db.start();
 

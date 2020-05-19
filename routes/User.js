@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const passport = require("passport");
 const bcrypt = require("bcryptjs");
 const roles = require("../config/Roles");
+const Note = require("../models/Note");
 
 //model
 const User = require("../models/User");
@@ -219,6 +220,25 @@ router.delete(
         res.status(400).json(err);
         console.log(err);
       });
+  }
+);
+
+// @route   GET user/notes
+// @desc    get all user notes
+// @access  private
+
+router.get(
+  "/notes",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const { _id } = req.user;
+    Note.find({ "user.user_id": _id })
+      .then((notes) => {
+        if (notes) {
+          res.status(200).json(notes);
+        }
+      })
+      .catch((err) => console.log(err));
   }
 );
 

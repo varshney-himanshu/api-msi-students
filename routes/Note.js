@@ -104,7 +104,7 @@ router.get(
   "/all",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    if (req.user.role !== roles.admin) {
+    if (req.user.role !== roles.admin && req.user.role !== roles.mod) {
       const errors = { auth: "not authorized!" };
       return res.status(403).json(errors);
     }
